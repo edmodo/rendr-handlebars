@@ -36,6 +36,21 @@ module.exports = function(Handlebars, getTemplate) {
       ViewClass = BaseView.getView(viewName, app.options.entryPath);
       view = new ViewClass(viewOptions);
 
+      if (viewOptions.scope == 'inherit' && parentView) {
+        var oldGetTemplateData = view.getTemplateData;
+
+        view.getTemplateData = function() {
+          var data = oldGetTemplateData.call(this);
+          _.each(parentView.options, function(val, key) {
+            if (_.isUndefined(data[key])) {
+              if (_.isFunction(val.toJSON)) data[key] = val.toJSON();
+              else                          data[key] = val;
+            }
+          });
+          return data;
+        }
+      }
+
       // create the outerHTML using className, tagName
       html = view.getHtml();
       return new Handlebars.SafeString(html);
