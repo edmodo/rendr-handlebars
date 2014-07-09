@@ -43,7 +43,7 @@ module.exports = function(Handlebars, getTemplate) {
           var data = oldGetTemplateData.call(this);
           _.each(parentView.options, function(val, key) {
             if (_.isUndefined(data[key])) {
-              if (_.isFunction(val.toJSON)) data[key] = val.toJSON();
+              if (!_.isUndefined(val) && _.isFunction(val.toJSON)) data[key] = val.toJSON();
               else                          data[key] = val;
             }
           });
