@@ -17,47 +17,53 @@ module.exports = function(Handlebars, getTemplate) {
       }
       viewOptions = options.hash || {};
 
-      // Pass through a reference to the app.
       var app = getProperty('_app', this, options);
+      // Pass through a reference to the app.
       if (app) {
         viewOptions.app = app;
         viewName = app.modelUtils.underscorize(viewName);
       } else{
-        throw new Error("An App instance is required when rendering a view, it could not be extracted from the options.")
+        throw new Error("An App instance is required when rendering a view, it could not be extracted from the options.");
       }
 
-      // Pass through a reference to the parent view.
-      var parentView = getProperty('_view', this, options);
-      if (parentView) {
-        viewOptions.parentView = parentView;
-      }
-
-      // get the Backbone.View based on viewName
-      ViewClass = BaseView.getView(viewName, app.options.entryPath);
-      view = new ViewClass(viewOptions);
-
-      if (viewOptions.scope == 'inherit' && parentView) {
-        var oldGetTemplateData = view.getTemplateData;
-
-        view.getTemplateData = function() {
-          var data = oldGetTemplateData.call(this);
-          _.each(parentView.options, function(val, key) {
-            if (_.isUndefined(data[key])) {
-              if (!_.isUndefined(val) && _.isFunction(val.toJSON)) data[key] = val.toJSON();
-              else                          data[key] = val;
-            }
-          });
-          return data;
+      if (isServer) {
+        // Pass through a reference to the parent view.
+        var parentView = getProperty('_view', this, options);
+        if (parentView) {
+          viewOptions.parentView = parentView;
         }
+
+        // get the Backbone.View based on viewName
+        ViewClass = BaseView.getView(viewName, app.options.entryPath);
+        view = new ViewClass(viewOptions);
+
+        // create the outerHTML using className, tagName
+        html = view.getHtml();
+        return new Handlebars.SafeString(html);
       }
 
-      // create the outerHTML using className, tagName
-      html = view.getHtml();
-      return new Handlebars.SafeString(html);
+      // only create an element to pass attributes to a single point for view instantiation for client-side
+
+      // Builds a fetch_summary attribute
+      viewOptions = BaseView.parseModelAndCollection(app.modelUtils, viewOptions);
+      var fetchSummary = BaseView.extractFetchSummary(app.modelUtils, viewOptions);
+      fetchSummary = JSON.stringify(fetchSummary);
+
+      viewOptions.fetch_summary = fetchSummary;
+      viewOptions = _.omit(viewOptions, ['model', 'collection', 'app']);
+
+      // create a list of data attributes
+      var attrString = _.inject(viewOptions, function(memo, value, key) {
+        return memo += " data-" + key + "=\"" + _.escape(value) + "\"";
+      }, '');
+
+      return new Handlebars.SafeString(
+        '<div data-render="true" ' + attrString +' data-view="'+ viewName +'"></div>'
+      );
     },
 
     partial: function(templateName, options) {
-      var data, html, context, template;
+      var html, context, template;
 
       template = getTemplate(templateName);
 

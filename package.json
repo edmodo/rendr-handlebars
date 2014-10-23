@@ -22,7 +22,10 @@
     "handlebars",
     "templates"
   ],
-  "author": "Spike Brehm <spike@airbnb.com>",
+  "author": {
+    "name": "Spike Brehm",
+    "email": "spike@airbnb.com"
+  },
   "license": "MIT",
   "engines": {
     "npm": ">=1.2.10"
@@ -32,5 +35,15 @@
     "sinon-chai": "~2.5.0",
     "chai": "~1.9.0",
     "sinon": "~1.8.2"
-  }
+  },
+  "readme": "[![travis-ci status](https://secure.travis-ci.org/rendrjs/rendr-handlebars.png)](http://travis-ci.org/#!/rendrjs/rendr-handlebars/builds)\n[![Dependency Status](https://david-dm.org/rendrjs/rendr-handlebars.png)](https://david-dm.org/rendrjs/rendr-handlebars)\n\nrendr-handlebars\n================\n\n[Handlebars](http://handlebarsjs.com/) template adapter for [Rendr](https://github.com/rendrjs/rendr) apps.\n",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/rendrjs/rendr-handlebars/issues"
+  },
+  "homepage": "https://github.com/rendrjs/rendr-handlebars",
+  "_id": "rendr-handlebars@0.2.0",
+  "_shasum": "b306aadd0c1c54172fc6b1269ee33c9444ea6897",
+  "_resolved": "git+ssh://git@github.com:saponifi3d/rendr-handlebars.git#553b45b534e2dfe7f6874cd3ab6c80c719e552dc",
+  "_from": "rendr-handlebars@git+ssh://git@github.com:saponifi3d/rendr-handlebars.git#553b45b534e2dfe7f6874cd3ab6c80c719e552dc"
 }
